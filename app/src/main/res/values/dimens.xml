@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="action_mode_margin">16dp</dimen>
+    <dimen name="action_mode_corner_radius">8dp</dimen>
+</resources>

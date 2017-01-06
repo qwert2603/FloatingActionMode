@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="FloatingActionMode">
+        <attr name="can_drag" format="boolean"/>
+        <attr name="can_dismiss" format="boolean"/>
+        <attr name="dismiss_threshold" format="float"/>
+        <attr name="drag_icon" format="reference"/>
+        <attr name="content_res" format="reference"/>
+        <attr name="animation_duration" format="integer"/>
+        <attr name="hide_direction" format="enum">
+            <enum name="none" value="0"/>
+            <enum name="top" value="1"/>
+            <enum name="bottom" value="2"/>
+            <enum name="nearest" value="3"/>
+        </attr>
+    </declare-styleable>
+
+</resources>

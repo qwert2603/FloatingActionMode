@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageButton
+        android:id="@+id/drag_button"
+        android:layout_width="?attr/actionBarSize"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@drawable/image_button_background"
+        android:src="@drawable/ic_drag_white_24dp"/>
+
+</merge>
