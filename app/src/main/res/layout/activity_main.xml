@@ -8,27 +8,31 @@
     android:layout_height="match_parent"
     tools:context="com.qwert2603.floating_action_mode.MainActivity">
 
-
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        <android.support.design.widget.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:popupTheme="@style/AppTheme.PopupOverlay">
+            android:layout_height="320dp">
 
-            <TextView
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/app_name"
-                android:textSize="20sp"
-                android:textColor="@android:color/white"/>
+                android:layout_height="?attr/actionBarSize"
+                app:popupTheme="@style/AppTheme.PopupOverlay">
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_name"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp"/>
 
-        </android.support.v7.widget.Toolbar>
+            </android.support.v7.widget.Toolbar>
+
+        </android.support.design.widget.CollapsingToolbarLayout>
 
     </android.support.design.widget.AppBarLayout>
 
@@ -45,10 +49,10 @@
         android:layout_height="?attr/actionBarSize"
         android:layout_margin="@dimen/action_mode_margin"
         android:background="@drawable/action_mode_background"
+        app:animation_duration="@integer/action_mode_animation_duration"
         app:can_dismiss="true"
         app:can_drag="true"
         app:dismiss_threshold="0.35"
-        app:drag_icon="@drawable/ic_drag_white_24dp"
-        app:animation_duration="@integer/action_mode_animation_duration"/>
+        app:drag_icon="@drawable/ic_drag_white_24dp"/>
 
 </android.support.design.widget.CoordinatorLayout>
