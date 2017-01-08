@@ -2,6 +2,7 @@ package com.qwert2603.floating_action_mode
 
 import android.app.Activity
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.TypedValue
@@ -15,9 +16,11 @@ object AndroidUtils {
     /**
      * Post runnable to execute on main thread with given delay.
      */
-    fun runOnUI(runnable: Runnable, delay: Long) {
-        sMainLooperHandler.postDelayed(runnable, delay)
+    fun runOnUI(delay: Long = 0, func: () -> Unit) {
+        sMainLooperHandler.postDelayed({ func() }, delay)
     }
+
+    fun isLollipopOrHigher() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
 
     /**
      * @return is given activity in portrait orientation.
@@ -40,13 +43,17 @@ object AndroidUtils {
     /**
      * Set enabled state to view and all its descendants.
      */
-    fun setViewEnabled(view: View, enabled: Boolean) {
-        view.isEnabled = enabled
-        if (view is ViewGroup) {
-            for (i in 0..view.childCount - 1) {
-                setViewEnabled(view.getChildAt(i), enabled)
+    fun View.setEnabledWithDescendants(enabled: Boolean) {
+        isEnabled = enabled
+        if (this is ViewGroup) {
+            for (i in 0..childCount - 1) {
+                getChildAt(i).setEnabledWithDescendants(enabled)
             }
         }
     }
+
+    fun View.centerX() = top + height / 2
+
+    fun View.parentHeight() = (parent as ViewGroup?)?.height ?: 0
 
 }

@@ -29,27 +29,25 @@ class MainActivity : AppCompatActivity() {
 
     private inner class ItemsAdapter : RecyclerView.Adapter<ItemsAdapter.VH>() {
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-            return VH(LayoutInflater.from(this@MainActivity).inflate(R.layout.item, parent, false))
-        }
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = VH(LayoutInflater.from(this@MainActivity).inflate(R.layout.item, parent, false))
 
-        override fun onBindViewHolder(holder: VH, position: Int) {
-            holder.bind(position)
-        }
+        override fun onBindViewHolder(holder: VH, position: Int) = holder.bind(position)
 
-        override fun getItemCount(): Int {
-            return 100
-        }
+        override fun getItemCount() = 100
 
         internal inner class VH(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
             init {
                 itemView.setOnClickListener { Snackbar.make(this@MainActivity.activity_main, itemView.text.text, Snackbar.LENGTH_SHORT).show() }
+                itemView.setOnLongClickListener {
+                    floating_action_mode.open(true)
+                    return@setOnLongClickListener true
+                }
             }
 
             @SuppressLint("SetTextI18n")
             fun bind(i: Int) = with(itemView) {
-                color.setBackgroundColor(Color.argb(i * 256 / 100, 0xff, 0, 0))
+                color.setBackgroundColor(Color.argb(i * 256 / 100, 0, 0, 0xff))
                 text.text = "Text #" + i
             }
         }

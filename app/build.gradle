@@ -23,6 +23,9 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 }
+kapt {
+    generateStubs = true
+}
 
 dependencies {
     ext.support_version = '25.1.0'
@@ -36,15 +39,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-}
-buildscript {
-    ext.kotlin_version = '1.0.6'
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
 }
 repositories {
     mavenCentral()
