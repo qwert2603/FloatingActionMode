@@ -4,11 +4,13 @@
     <declare-styleable name="FloatingActionMode">
         <attr name="opened" format="boolean"/>
         <attr name="content_res" format="reference"/>
+        <attr name="can_close" format="boolean"/>
+        <attr name="close_icon" format="reference"/>
         <attr name="can_drag" format="boolean"/>
         <attr name="drag_icon" format="reference"/>
         <attr name="can_dismiss" format="boolean"/>
         <attr name="dismiss_threshold" format="float"/>
-        <attr name="hide_direction" format="enum">
+        <attr name="minimize_direction" format="enum">
             <enum name="none" value="0"/>
             <enum name="top" value="1"/>
             <enum name="bottom" value="2"/>

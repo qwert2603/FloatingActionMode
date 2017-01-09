@@ -43,7 +43,6 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
      */
     var bottomOffset: Int = 0
         set(value) {
-            LogUtils.d("bottomOffset $value")
             if (value != field) {
                 field = value
                 arrangeY()
@@ -55,8 +54,8 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
         set(value) {
             field = value
 
-            if (childCount > 1) {
-                removeViewAt(1)
+            if (childCount > 2) {
+                removeViewAt(2)
             }
 
             if (field != 0) {
@@ -64,7 +63,30 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
             }
         }
 
+    var canClose: Boolean = true
+        set(value) {
+            field = value
+            close_button.visibility = if (field) VISIBLE else INVISIBLE
+        }
+
+    @DrawableRes
+    var closeIconRes = R.drawable.ic_close_white_24dp
+        set(value) {
+            field = value
+            if (field != 0) {
+                close_button.setImageResource(field)
+            } else {
+                close_button.setImageDrawable(null)
+            }
+        }
+
     var canDrag: Boolean = true
+        set(value) {
+            field = value
+            drag_button.visibility = if (field) VISIBLE else INVISIBLE
+        }
+
+    var maximized: Boolean = true
 
     var maximizeTranslationY: Float = 0f
         set(value) {
@@ -88,32 +110,32 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
     var canDismiss: Boolean = true
 
     /**
-     * Set threshold from than actionMode will be dismissed.
+     * Set threshold for actionMode dismissal.
      * If ([getTranslationX]/[getWidth]) > [dismissThreshold] actionMode will be dismissed after user stops touching [drag_button].
      */
     @FloatRange(from = 0.0, to = 1.0)
     var dismissThreshold: Float = 0.4f
 
-    interface OnDismissListener {
-        fun onActionModeDismiss()
+    interface OnCloseListener {
+        fun onClose()
     }
 
-    var mOnDismissListener: OnDismissListener? = null
+    var onCloseListener: OnCloseListener? = null
 
-    enum class HideDirection {
+    enum class MinimizeDirection {
         NONE,
         TOP,
         BOTTOM,
         NEAREST
     }
 
-    var hideDirection = HideDirection.NEAREST
+    var minimizeDirection = MinimizeDirection.NEAREST
 
     var animationDuration: Long = 400L
 
     init {
         if (!isInEditMode) {
-            visibility = GONE
+            visibility = INVISIBLE
         }
 
         LayoutInflater.from(context).inflate(R.layout.floating_action_mode, this, true)
@@ -124,17 +146,21 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
             try {
                 opened = typedArray.getBoolean(R.styleable.FloatingActionMode_opened, false)
                 contentRes = typedArray.getResourceId(R.styleable.FloatingActionMode_content_res, 0)
+                canClose = typedArray.getBoolean(R.styleable.FloatingActionMode_can_close, true)
+                closeIconRes = typedArray.getResourceId(R.styleable.FloatingActionMode_close_icon, R.drawable.ic_close_white_24dp)
                 canDrag = typedArray.getBoolean(R.styleable.FloatingActionMode_can_drag, true)
                 dragIconRes = typedArray.getResourceId(R.styleable.FloatingActionMode_drag_icon, R.drawable.ic_drag_white_24dp)
                 canDismiss = typedArray.getBoolean(R.styleable.FloatingActionMode_can_dismiss, true)
                 dismissThreshold = typedArray.getFloat(R.styleable.FloatingActionMode_dismiss_threshold, 0.4f)
-                val hd = typedArray.getInteger(R.styleable.FloatingActionMode_hide_direction, -1)
-                if (hd > 0) hideDirection = HideDirection.values()[hd]
+                val md = typedArray.getInteger(R.styleable.FloatingActionMode_minimize_direction, -1)
+                if (md > 0) minimizeDirection = MinimizeDirection.values()[md]
                 animationDuration = typedArray.getInteger(R.styleable.FloatingActionMode_animation_duration, 400).toLong()
             } finally {
                 typedArray.recycle()
             }
         }
+
+        close_button.setOnClickListener { close() }
 
         drag_button.setOnTouchListener(object : View.OnTouchListener {
             var prevTransitionY = 0f
@@ -142,16 +168,15 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
             var startRawY = 0f
 
             override fun onTouch(v: View, event: MotionEvent): Boolean {
-                if (!canDrag) {
+                if (!this@FloatingActionMode.canDrag) {
                     return false
                 }
 
                 val fractionX = Math.abs(event.rawX - startRawX) / this@FloatingActionMode.width
-                LogUtils.d("fractionX == " + fractionX)
 
                 when (event.actionMasked) {
                     MotionEvent.ACTION_DOWN -> {
-                        drag_button.isPressed = true
+                        this@FloatingActionMode.drag_button.isPressed = true
                         startRawX = event.rawX
                         startRawY = event.rawY
                         prevTransitionY = this@FloatingActionMode.translationY
@@ -160,15 +185,15 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
                         this@FloatingActionMode.maximizeTranslationY = prevTransitionY + event.rawY - startRawY
                         translationX = event.rawX - startRawX
                         if (canDismiss) {
-                            val alpha = if (fractionX < dismissThreshold) 1.0f else 1 - (fractionX - dismissThreshold) / (1 - dismissThreshold)
-                            setAlpha(alpha)
+                            val alpha = if (fractionX < dismissThreshold) 1.0f else Math.pow(1.0 - (fractionX - dismissThreshold) / (1 - dismissThreshold), 4.0).toFloat()
+                            this@FloatingActionMode.alpha = alpha
                         }
                     }
                     MotionEvent.ACTION_UP -> {
                         drag_button.isPressed = false
                         this@FloatingActionMode.animate().translationX(0f)
                         if (canDismiss && fractionX > dismissThreshold) {
-                            mOnDismissListener?.onActionModeDismiss()
+                            this@FloatingActionMode.close()
                         }
                     }
                 }
@@ -176,19 +201,24 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
             }
         })
 
-        drag_button.visibility = if (canDrag) VISIBLE else GONE
-        drag_button.setImageResource(dragIconRes)
-
         if (opened) {
-            open(false)
+            visibility = View.VISIBLE
+            maximize(false)
         }
     }
 
     private fun arrangeY() {
+        if (!maximized) {
+            animate().translationY(calculateMinimizeTranslationY())
+            return
+        }
         translationY = calculateArrangeTranslationY()
     }
 
     private fun calculateArrangeTranslationY(): Float {
+        if (!maximized) {
+            return calculateMinimizeTranslationY()
+        }
         var tY = maximizeTranslationY
         var topMargin = 0
         var bottomMargin = 0
@@ -208,52 +238,77 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
         return tY
     }
 
-    fun open(animate: Boolean) {
-        opened = true
-        if (animate) {
-            minimize(false)
-            maximize(animate)
-        } else {
-            visibility = VISIBLE
+    fun open() {
+        if (opened) {
+            return
         }
+        opened = true
+        visibility = View.VISIBLE
+        maximizeTranslationY = 0f
+        translationY = 0f
+        minimize(false)
+        maximize(true)
     }
 
-    fun close(animate: Boolean) {
-        opened = false
-        if (animate) {
-            minimize(true)
-            AndroidUtils.runOnUI(animationDuration) { visibility = View.GONE }
-        } else {
-            visibility = GONE
+    fun close() {
+        onCloseListener?.onClose()
+        minimize(true)
+        AndroidUtils.runOnUI(animationDuration * 2) {
+            opened = false
+            visibility = View.INVISIBLE
         }
     }
 
     fun maximize(animate: Boolean) {
-        LogUtils.d("maximize $animate")
+        if (!opened) {
+            return
+        }
+        maximized = true
         setEnabledWithDescendants(true)
-        visibility = VISIBLE
-        animate().scaleY(1f).scaleX(1f).translationY(maximizeTranslationY).alpha(1f).duration = (if (animate) animationDuration else 10/*todo: is THAT works?*/)
+        val function = {
+            scaleY = 1f
+            scaleX = 1f
+            translationY = calculateArrangeTranslationY()
+            alpha = 1f
+        }
+        if (animate) {
+            animate().scaleY(1f).scaleX(1f).translationY(calculateArrangeTranslationY()).alpha(1f)
+                    .duration = animationDuration
+        } else {
+            function()
+        }
     }
 
     fun minimize(animate: Boolean) {
-        LogUtils.d("minimize $animate")
+        if (!opened) {
+            return
+        }
+        maximized = false
         setEnabledWithDescendants(false)
-        visibility = VISIBLE
-        pivotY = 0f
-        pivotX = (width / 2).toFloat()
-        animate().scaleY(0.5f).scaleX(0.5f).translationY(calculateMinimizeTranslationY()).alpha(0.5f).duration = (if (animate) animationDuration else 10)
+        val function = {
+            scaleY = 0.5f
+            scaleX = 0.5f
+            translationY = calculateMinimizeTranslationY()
+            alpha = 0.5f
+        }
+        if (animate) {
+            animate().scaleY(0.5f).scaleX(0.5f).translationY(calculateMinimizeTranslationY()).alpha(0.5f)
+                    .duration = animationDuration
+        } else {
+            function()
+        }
     }
 
-    private fun calculateMinimizeTranslationY() = when (hideDirection) {
-        HideDirection.TOP -> calculateMinimizeTranslationYTop()
-        HideDirection.BOTTOM -> calculateMinimizeTranslationYBottom()
-        HideDirection.NEAREST -> if (isInTopHalfOfParent()) calculateMinimizeTranslationYTop() else calculateMinimizeTranslationYBottom()
-        HideDirection.NONE -> 0f
+    private fun calculateMinimizeTranslationY() = when (minimizeDirection) {
+        MinimizeDirection.TOP -> calculateMinimizeTranslationYTop()
+        MinimizeDirection.BOTTOM -> calculateMinimizeTranslationYBottom()
+        MinimizeDirection.NEAREST -> if (isInTopHalfOfParent()) calculateMinimizeTranslationYTop() else calculateMinimizeTranslationYBottom()
+        MinimizeDirection.NONE -> 0f
     }
 
-    private fun calculateMinimizeTranslationYTop() = (-top + topOffset).toFloat()
+    private fun calculateMinimizeTranslationYTop() = (-top + topOffset).toFloat() - height * 0.25f
 
-    private fun calculateMinimizeTranslationYBottom() = parentHeight() - bottomOffset - bottom + height * 0.5f
+    private fun calculateMinimizeTranslationYBottom() = parentHeight() - bottomOffset - bottom + height * 0.25f
 
     private fun isInTopHalfOfParent() = (centerX() + translationY < parentHeight() / 2)
 
@@ -266,7 +321,7 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
         override fun onDependentViewChanged(parent: CoordinatorLayout, child: FloatingActionMode, dependency: View): Boolean {
             when (dependency) {
                 is AppBarLayout -> child.topOffset = dependency.bottom
-                is Snackbar.SnackbarLayout -> child.bottomOffset = dependency.getHeight() - dependency.getTranslationY().toInt()
+                is Snackbar.SnackbarLayout -> child.bottomOffset = dependency.height - dependency.translationY.toInt()
             }
             return false
         }
@@ -277,8 +332,6 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
 
         override fun onNestedScroll(coordinatorLayout: CoordinatorLayout, child: FloatingActionMode, target: View, dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int) {
             super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed)
-
-            LogUtils.d("onNestedScroll $dyConsumed")
 
             if (dyConsumed > 0) {
                 child.minimize(true)
@@ -299,7 +352,7 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
          bundle.putBoolean(CAN_DRAG_KEY, canDrag)
          bundle.putInt(ANIMATION_CONTENT_RES_KEY, contentRes)
          bundle.putLong(ANIMATION_DURATION_KEY, animationDuration)
-         bundle.putInt(HIDE_DIRECTION_KEY, hideDirection.ordinal)
+         bundle.putInt(HIDE_DIRECTION_KEY, minimizeDirection.ordinal)
 
          return bundle
      }
@@ -313,7 +366,7 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
              canDrag = parcelable.getBoolean(CAN_DRAG_KEY)
              contentRes = parcelable.getInt(ANIMATION_CONTENT_RES_KEY)
              animationDuration = parcelable.getLong(ANIMATION_DURATION_KEY)
-             hideDirection = HideDirection.values()[parcelable.getInt(HIDE_DIRECTION_KEY)]
+             minimizeDirection = MinimizeDirection.values()[parcelable.getInt(HIDE_DIRECTION_KEY)]
 
              val state = parcelable.getParcelable<Parcelable>(SUPER_STATE_KEY)
              super.onRestoreInstanceState(state)

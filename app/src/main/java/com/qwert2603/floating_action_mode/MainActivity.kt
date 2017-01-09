@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item.view.*
+import kotlinx.android.synthetic.main.user_list_action_mode.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,6 +26,13 @@ class MainActivity : AppCompatActivity() {
         recycler_view.layoutManager = LinearLayoutManager(this)
         recycler_view.adapter = ItemsAdapter()
         recycler_view.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+
+        select_all.setOnClickListener { Snackbar.make(activity_main, "select_all", Snackbar.LENGTH_SHORT).show() }
+        floating_action_mode.onCloseListener = object : FloatingActionMode.OnCloseListener {
+            override fun onClose() {
+                Snackbar.make(activity_main, "closed", Snackbar.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private inner class ItemsAdapter : RecyclerView.Adapter<ItemsAdapter.VH>() {
@@ -40,7 +48,7 @@ class MainActivity : AppCompatActivity() {
             init {
                 itemView.setOnClickListener { Snackbar.make(this@MainActivity.activity_main, itemView.text.text, Snackbar.LENGTH_SHORT).show() }
                 itemView.setOnLongClickListener {
-                    floating_action_mode.open(true)
+                    floating_action_mode.open()
                     return@setOnLongClickListener true
                 }
             }
