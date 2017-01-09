@@ -139,7 +139,7 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
         }
 
         LayoutInflater.from(context).inflate(R.layout.floating_action_mode, this, true)
-        orientation = LinearLayout.HORIZONTAL
+        orientation = HORIZONTAL
 
         if (attrs != null) {
             val typedArray = context.obtainStyledAttributes(attrs, R.styleable.FloatingActionMode)
@@ -162,7 +162,7 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
 
         close_button.setOnClickListener { close() }
 
-        drag_button.setOnTouchListener(object : View.OnTouchListener {
+        drag_button.setOnTouchListener(object : OnTouchListener {
             var prevTransitionY = 0f
             var startRawX = 0f
             var startRawY = 0f

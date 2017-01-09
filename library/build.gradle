@@ -1,12 +1,12 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
+
     defaultConfig {
-        applicationId "com.qwert2603.floating_action_mode_example"
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 1
@@ -30,7 +30,6 @@ dependencies {
     ext.support_version = '25.1.0'
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':library')
 
     compile "com.android.support:appcompat-v7:$support_version"
     compile "com.android.support:design:$support_version"
