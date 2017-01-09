@@ -13,9 +13,9 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.widget.LinearLayout
-import com.qwert2603.floating_action_mode.AndroidUtils.centerX
-import com.qwert2603.floating_action_mode.AndroidUtils.parentHeight
-import com.qwert2603.floating_action_mode.AndroidUtils.setEnabledWithDescendants
+import com.qwert2603.floating_action_mode.Utils.centerX
+import com.qwert2603.floating_action_mode.Utils.parentHeight
+import com.qwert2603.floating_action_mode.Utils.setEnabledWithDescendants
 import kotlinx.android.synthetic.main.floating_action_mode.view.*
 
 /**
@@ -253,7 +253,7 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
     fun close() {
         onCloseListener?.onClose()
         minimize(true)
-        AndroidUtils.runOnUI(animationDuration * 2) {
+        Utils.runOnUI(animationDuration * 2) {
             opened = false
             visibility = View.INVISIBLE
         }
