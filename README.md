@@ -6,29 +6,31 @@ Floating Action Mode (FAM) is the custom view for context actions on Android.
 
 FAM has following XML-attributes (they also may be changed programmatically):
 
-* ***opened*** defines if FAM opened when created.
+* ***opened*** defines if FAM opened when created. (false by default)
 
-* ***content_res*** is LayoutRes that represents content of FAM (e.g. some buttons)
+* ***content_res*** is LayoutRes that represents content of FAM (e.g. some buttons). (no content by default)
 
-* ***can_close*** defines if FAM will have button for closing itself.
+* ***can_close*** defines if FAM will have button for closing itself. (true by default)
 
 * ***close_icon*** is DrawableRes for closing button. (has default value)
 
-* ***can_drag*** defines if FAM will have button for gragging itself.
+* ***can_drag*** defines if FAM will have button for gragging itself. (true by default)
 
 * ***drag_icon*** is DrawableRes for dragging button. (has default value)
 
-* ***can_dismiss*** defines if FAM may be dismissed (and closed) if transtationX while dragging is big enough.
+* ***can_dismiss*** defines if FAM may be dismissed (and closed) if transtationX while dragging is big enough. (true by default)
 
-* ***dismiss_threshold*** is fraction that used to solve threshold translationX for dismissing.
+* ***dismiss_threshold*** is fraction that used to solve threshold translationX for dismissing. (0.4f by default)
 
-* ***minimize_direction*** defines minimize direction of FAM.This attribute may have following values:
+* ***minimize_direction*** defines minimize direction of FAM. This attribute may have following values (nearest by default):
  * *none* - FAM will not be translated while minimizing.
  * *top* - FAM will be translated to the top border of parent (excluding offsets) while minimizing.
  * *bottom* - FAM will be translated to the bottom border of parent (excluding offsets) while minimizing.
  * *nearest* - FAM will be translated to the nearest (top or bottom) border of parent (excluding offsets) while minimizing.
 
-* ***animation_duration*** defines duration of  minimize/maximize animations.
+* ***animation_duration*** defines duration of minimize/maximize animations. (400 by default)
+
+FAM supports OnCloseListener that allows to get callback when FAM was dismissed or closed by user.
 
 ## Using in CoordinatorLayout
 
