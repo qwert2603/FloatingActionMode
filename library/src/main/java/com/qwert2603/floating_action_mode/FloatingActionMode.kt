@@ -165,7 +165,7 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
                 canDismiss = typedArray.getBoolean(R.styleable.FloatingActionMode_can_dismiss, true)
                 dismissThreshold = typedArray.getFloat(R.styleable.FloatingActionMode_dismiss_threshold, 0.4f)
                 val md = typedArray.getInteger(R.styleable.FloatingActionMode_minimize_direction, -1)
-                if (md > 0) minimizeDirection = MinimizeDirection.values()[md]
+                if (md >= 0) minimizeDirection = MinimizeDirection.values()[md]
                 animationDuration = typedArray.getInteger(R.styleable.FloatingActionMode_animation_duration, 400).toLong()
             } finally {
                 typedArray.recycle()
@@ -337,7 +337,7 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         MinimizeDirection.TOP -> calculateMinimizeTranslationYTop()
         MinimizeDirection.BOTTOM -> calculateMinimizeTranslationYBottom()
         MinimizeDirection.NEAREST -> if (isInTopHalfOfParent()) calculateMinimizeTranslationYTop() else calculateMinimizeTranslationYBottom()
-        MinimizeDirection.NONE -> 0f
+        MinimizeDirection.NONE -> translationY
     }
 
     private fun calculateMinimizeTranslationYTop() = (-top + topOffset).toFloat() - height * 0.25f
