@@ -339,6 +339,15 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         override fun onNestedScroll(coordinatorLayout: CoordinatorLayout, child: FloatingActionMode, target: View, dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int) {
             super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed)
 
+            // FAM should not react to scroll its children.
+            var parent = target.parent
+            while (parent != coordinatorLayout) {
+                if (parent == child) {
+                    return
+                }
+                parent = target.parent
+            }
+
             if (dyConsumed > 0) {
                 child.minimize(true)
             } else if (dyConsumed < 0) {

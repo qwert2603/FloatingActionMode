@@ -55,7 +55,9 @@ class MainActivity : AppCompatActivity() {
                         floating_action_mode.canClose = !floating_action_mode.canClose
                     }
                     if (adapterPosition == 26) {
-                        floating_action_mode.contentRes = if (floating_action_mode.contentRes == 0) R.layout.user_list_action_mode else 0
+                        if (floating_action_mode.contentRes == 0) floating_action_mode.contentRes = R.layout.user_list_action_mode else
+                        if (floating_action_mode.contentRes == R.layout.user_list_action_mode) floating_action_mode.contentRes = R.layout.user_list_action_mode_2 else
+                        if (floating_action_mode.contentRes == R.layout.user_list_action_mode_2) floating_action_mode.contentRes = 0
                     }
                 }
                 itemView.setOnLongClickListener {
