@@ -14,18 +14,18 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.widget.RelativeLayout
+import android.widget.LinearLayout
 import com.qwert2603.floating_action_mode.Utils.centerX
 import com.qwert2603.floating_action_mode.Utils.parentHeight
 import com.qwert2603.floating_action_mode.Utils.setEnabledWithDescendants
 import kotlinx.android.synthetic.main.floating_action_mode.view.*
 
 /**
- * Floating action mode that shows layout given to it.
- * Can be dragged over screen and swiped-to-dismiss.
+ * [FloatingActionMode] (FAM) that shows layout given to it.
+ * Can be closed, dragged over screen and swiped-to-dismiss.
  */
 @CoordinatorLayout.DefaultBehavior(FloatingActionMode.FloatingActionModeBehavior::class)
-open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : RelativeLayout(context, attrs, defStyleAttr) {
+open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : LinearLayout(context, attrs, defStyleAttr) {
 
     var opened: Boolean = false
 
@@ -64,8 +64,9 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         set(value) {
             field = value
 
-            if (childCount > 2) {
-                removeViewAt(2)
+            // first is LinearLayout with close_button & drag_button.
+            if (childCount > 1) {
+                removeViewAt(1)
             }
 
             if (field != 0) {
@@ -149,6 +150,8 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         }
 
         LayoutInflater.from(context).inflate(R.layout.floating_action_mode, this, true)
+        orientation = HORIZONTAL
+        setOnClickListener { /* nth */ }
 
         if (attrs != null) {
             val typedArray = context.obtainStyledAttributes(attrs, R.styleable.FloatingActionMode)
@@ -220,8 +223,12 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         maximize(false)
     }
 
+    /**
+     * Arrange FAM to correct Y position considering [topOffset], [bottomOffset], [maximized] and [maximizeTranslationY]
+     */
     private fun arrangeY() {
         if (!maximized) {
+            // todo: react only if FAM crosses topOffset or bottomOffset.
             animate().translationY(calculateMinimizeTranslationY()).duration = animationDuration
             return
         }
@@ -251,6 +258,9 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         return tY
     }
 
+    /**
+     * Open FAM with animation.
+     */
     open fun open() {
         if (opened) {
             return
@@ -263,6 +273,9 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         maximize(true)
     }
 
+    /**
+     * Close FAM with animation.
+     */
     open fun close() {
         onCloseListener?.onClose()
         minimize(true)
@@ -272,6 +285,10 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         }
     }
 
+    /**
+     * Maximize FAM.
+     * If [animate] == true, it will be animated to its maximized position.
+     */
     open fun maximize(animate: Boolean) {
         if (!opened) {
             return
@@ -292,6 +309,10 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         }
     }
 
+    /**
+     * Minimize FAM.
+     * If [animate] == true, it will be animated to its minimize position considering [minimizeDirection].
+     */
     open fun minimize(animate: Boolean) {
         if (!opened) {
             return
@@ -325,6 +346,13 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
 
     private fun isInTopHalfOfParent() = (centerX() + translationY < parentHeight() / 2)
 
+    /**
+     * Behavior for FAM, that updates FAM's
+     * [topOffset] as [AppBarLayout.getHeight] and
+     * [bottomOffset] as ([Snackbar.SnackbarLayout.getHeight]-[Snackbar.SnackbarLayout.getTranslationY]).
+     *
+     * Also this Behavior minimizes/maximizes FAM on scroll.
+     */
     open class FloatingActionModeBehavior @JvmOverloads constructor(context: Context? = null, attrs: AttributeSet? = null) : CoordinatorLayout.Behavior<FloatingActionMode>(context, attrs) {
 
         override fun layoutDependsOn(parent: CoordinatorLayout?, child: FloatingActionMode?, dependency: View?): Boolean {
@@ -352,7 +380,7 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
                 if (parent == child) {
                     return
                 }
-                parent = target.parent
+                parent = parent.parent
             }
 
             if (dyConsumed > 0) {
