@@ -36,6 +36,10 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         set(value) {
             if (value != field) {
                 field = value
+                if (isInEditMode) {
+                    offsetTopAndBottom(calculateArrangeTranslationY().toInt())
+                    return
+                }
                 arrangeY()
             }
         }
@@ -47,6 +51,10 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         set(value) {
             if (value != field) {
                 field = value
+                if (isInEditMode) {
+                    offsetTopAndBottom(calculateArrangeTranslationY().toInt())
+                    return
+                }
                 arrangeY()
             }
         }
