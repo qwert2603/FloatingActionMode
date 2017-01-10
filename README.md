@@ -75,3 +75,20 @@ FAM animates *close_button* and *drag_button* changes by default.
 
 </android.support.design.widget.CoordinatorLayout>
 ```
+
+##Download
+
+```
+allprojects {
+		repositories {
+			...
+			maven { url "https://www.jitpack.io" }
+		}
+	}
+```
+
+```
+dependencies {
+	        compile 'com.github.qwert2603:FloatingActionMode:x.y.z'
+}
+```
