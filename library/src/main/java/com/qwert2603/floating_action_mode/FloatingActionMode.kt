@@ -25,7 +25,7 @@ import kotlinx.android.synthetic.main.floating_action_mode.view.*
  * Can be dragged over screen and swiped-to-dismiss.
  */
 @CoordinatorLayout.DefaultBehavior(FloatingActionMode.FloatingActionModeBehavior::class)
-class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : LinearLayout(context, attrs, defStyleAttr) {
+open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : LinearLayout(context, attrs, defStyleAttr) {
 
     var opened: Boolean = false
 
@@ -52,7 +52,7 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
         }
 
     @LayoutRes
-    var contentRes: Int = 0
+    open var contentRes: Int = 0
         set(value) {
             field = value
 
@@ -65,14 +65,14 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
             }
         }
 
-    var canClose: Boolean = true
+    open var canClose: Boolean = true
         set(value) {
             field = value
             close_button.visibility = if (field) View.VISIBLE else View.GONE
         }
 
     @DrawableRes
-    var closeIconRes: Int = R.drawable.ic_close_white_24dp
+    open var closeIconRes: Int = R.drawable.ic_close_white_24dp
         set(value) {
             field = value
             if (field != 0) {
@@ -92,14 +92,14 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
             }
         }
 
-    var canDrag: Boolean = true
+    open var canDrag: Boolean = true
         set(value) {
             field = value
             drag_button.visibility = if (field) View.VISIBLE else View.GONE
         }
 
     @DrawableRes
-    var dragIconRes: Int = R.drawable.ic_drag_white_24dp
+    open var dragIconRes: Int = R.drawable.ic_drag_white_24dp
         set(value) {
             field = value
             if (field != 0) {
@@ -244,7 +244,7 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
         return tY
     }
 
-    fun open() {
+    open fun open() {
         if (opened) {
             return
         }
@@ -256,7 +256,7 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
         maximize(true)
     }
 
-    fun close() {
+    open fun close() {
         onCloseListener?.onClose()
         minimize(true)
         Utils.runOnUI(animationDuration * 2) {
@@ -265,7 +265,7 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
         }
     }
 
-    fun maximize(animate: Boolean) {
+    open fun maximize(animate: Boolean) {
         if (!opened) {
             return
         }
@@ -285,7 +285,7 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
         }
     }
 
-    fun minimize(animate: Boolean) {
+    open fun minimize(animate: Boolean) {
         if (!opened) {
             return
         }
@@ -318,7 +318,7 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
 
     private fun isInTopHalfOfParent() = (centerX() + translationY < parentHeight() / 2)
 
-    class FloatingActionModeBehavior @JvmOverloads constructor(context: Context? = null, attrs: AttributeSet? = null) : CoordinatorLayout.Behavior<FloatingActionMode>(context, attrs) {
+    open class FloatingActionModeBehavior @JvmOverloads constructor(context: Context? = null, attrs: AttributeSet? = null) : CoordinatorLayout.Behavior<FloatingActionMode>(context, attrs) {
 
         override fun layoutDependsOn(parent: CoordinatorLayout?, child: FloatingActionMode?, dependency: View?): Boolean {
             return dependency is AppBarLayout || dependency is Snackbar.SnackbarLayout
