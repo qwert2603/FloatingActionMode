@@ -63,6 +63,7 @@
         app:animation_duration="@integer/action_mode_animation_duration"
         app:can_dismiss="true"
         app:can_drag="true"
+        app:opened="false"
         app:content_res="@layout/user_list_action_mode_2"
         app:dismiss_threshold="0.35"
         app:drag_icon="@drawable/ic_drag_white_24dp"
