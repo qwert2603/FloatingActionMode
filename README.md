@@ -1,6 +1,6 @@
 # FloatingActionMode
 
-Floating Action Mode (FAM) is the custom view for context actions on Android.
+Floating Action Mode (FAM) is the custom view for context actions on Android. (*minSdkVersion* ***15***)
 
 # [Demo Video](https://www.youtube.com/watch?v=PbQ8N7pWGt4)
 
@@ -30,13 +30,20 @@ FAM has following XML-attributes (they also may be changed programmatically):
 
 * ***animation_duration*** defines duration of minimize/maximize animations. (400 by default)
 
-FAM supports OnCloseListener that allows to get callback when FAM was dismissed or closed by user.
+FAM has ***OnCloseListener*** that allows to get callback when FAM was dismissed or closed by user.
 
 ## Using in CoordinatorLayout
 
 FAM has its special CoordinatorLayout.Behavior and can be used in CoordinatorLayout.
 FloatingActionModeBehavior allows to offset FAM of AppBarLayout and Snackbar.SnackbarLayout.
 Also it allows to minimize/maximize FAM on scroll.
+
+FAM has no background by default, so you can use any one you want.
+
+*android:translationZ="8dp"* can be used for shadow.
+
+*android:animateLayoutChanges="true"* can be used to animate contentChanges (*content_res* attribute).
+FAM animates *close_button* and *drag_button* changes by default.
 
 ```
 <android.support.design.widget.CoordinatorLayout>
