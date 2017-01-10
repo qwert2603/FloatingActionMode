@@ -1,6 +1,5 @@
 package com.qwert2603.floating_action_mode
 
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.view.View
@@ -17,12 +16,11 @@ internal object Utils {
         sMainLooperHandler.postDelayed({ func() }, delay)
     }
 
-    fun isLollipopOrHigher() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-
     /**
      * Set enabled state to view and all its descendants.
      */
     fun View.setEnabledWithDescendants(enabled: Boolean) {
+        //todo: disable/enable scrolling in NestedScrollView.
         isEnabled = enabled
         if (this is ViewGroup) {
             for (i in 0..childCount - 1) {
