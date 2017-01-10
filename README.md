@@ -4,7 +4,9 @@
 
 Floating Action Mode (FAM) is the custom view for context actions on Android. (*minSdkVersion* ***15***)
 
-# [Demo Video](https://www.youtube.com/watch?v=PbQ8N7pWGt4)
+## [Demo Video](https://www.youtube.com/watch?v=PbQ8N7pWGt4)
+
+## XML-Attributes
 
 FAM has following XML-attributes (they also may be changed programmatically):
 
