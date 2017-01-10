@@ -430,6 +430,7 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
 
         if (opened) {
             openWithoutAnimation()
+            arrangeY()
         }
     }
 
