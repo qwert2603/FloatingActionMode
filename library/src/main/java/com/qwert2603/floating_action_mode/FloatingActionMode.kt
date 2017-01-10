@@ -14,7 +14,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import com.qwert2603.floating_action_mode.Utils.centerX
 import com.qwert2603.floating_action_mode.Utils.parentHeight
 import com.qwert2603.floating_action_mode.Utils.setEnabledWithDescendants
@@ -25,7 +25,7 @@ import kotlinx.android.synthetic.main.floating_action_mode.view.*
  * Can be dragged over screen and swiped-to-dismiss.
  */
 @CoordinatorLayout.DefaultBehavior(FloatingActionMode.FloatingActionModeBehavior::class)
-open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : LinearLayout(context, attrs, defStyleAttr) {
+open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : RelativeLayout(context, attrs, defStyleAttr) {
 
     var opened: Boolean = false
 
@@ -149,7 +149,6 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         }
 
         LayoutInflater.from(context).inflate(R.layout.floating_action_mode, this, true)
-        orientation = HORIZONTAL
 
         if (attrs != null) {
             val typedArray = context.obtainStyledAttributes(attrs, R.styleable.FloatingActionMode)
