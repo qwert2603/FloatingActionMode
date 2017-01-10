@@ -1,6 +1,8 @@
 package com.qwert2603.floating_action_mode
 
 import android.content.Context
+import android.os.Bundle
+import android.os.Parcelable
 import android.support.annotation.DrawableRes
 import android.support.annotation.FloatRange
 import android.support.annotation.LayoutRes
@@ -50,7 +52,7 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
         }
 
     @LayoutRes
-    var contentRes = 0
+    var contentRes: Int = 0
         set(value) {
             field = value
 
@@ -66,11 +68,11 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
     var canClose: Boolean = true
         set(value) {
             field = value
-            close_button.visibility = if (field) VISIBLE else INVISIBLE
+            close_button.visibility = if (field) View.VISIBLE else View.GONE
         }
 
     @DrawableRes
-    var closeIconRes = R.drawable.ic_close_white_24dp
+    var closeIconRes: Int = R.drawable.ic_close_white_24dp
         set(value) {
             field = value
             if (field != 0) {
@@ -78,12 +80,6 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
             } else {
                 close_button.setImageDrawable(null)
             }
-        }
-
-    var canDrag: Boolean = true
-        set(value) {
-            field = value
-            drag_button.visibility = if (field) VISIBLE else INVISIBLE
         }
 
     var maximized: Boolean = true
@@ -96,8 +92,14 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
             }
         }
 
+    var canDrag: Boolean = true
+        set(value) {
+            field = value
+            drag_button.visibility = if (field) View.VISIBLE else View.GONE
+        }
+
     @DrawableRes
-    var dragIconRes = R.drawable.ic_drag_white_24dp
+    var dragIconRes: Int = R.drawable.ic_drag_white_24dp
         set(value) {
             field = value
             if (field != 0) {
@@ -135,7 +137,7 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
 
     init {
         if (!isInEditMode) {
-            visibility = INVISIBLE
+            visibility = View.INVISIBLE
         }
 
         LayoutInflater.from(context).inflate(R.layout.floating_action_mode, this, true)
@@ -191,7 +193,7 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
                     }
                     MotionEvent.ACTION_UP -> {
                         drag_button.isPressed = false
-                        this@FloatingActionMode.animate().translationX(0f)
+                        this@FloatingActionMode.animate().translationX(0f).duration = animationDuration
                         if (canDismiss && fractionX > dismissThreshold) {
                             this@FloatingActionMode.close()
                         }
@@ -202,14 +204,18 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
         })
 
         if (opened) {
-            visibility = View.VISIBLE
-            maximize(false)
+            openWithoutAnimation()
         }
+    }
+
+    private fun openWithoutAnimation() {
+        visibility = View.VISIBLE
+        maximize(false)
     }
 
     private fun arrangeY() {
         if (!maximized) {
-            animate().translationY(calculateMinimizeTranslationY())
+            animate().translationY(calculateMinimizeTranslationY()).duration = animationDuration
             return
         }
         translationY = calculateArrangeTranslationY()
@@ -341,50 +347,61 @@ class FloatingActionMode @JvmOverloads constructor(context: Context, attrs: Attr
         }
     }
 
-    /* override fun onSaveInstanceState(): Parcelable {
-         LogUtils.d("protected Parcelable onSaveInstanceState() {")
-         val bundle = Bundle()
-         bundle.putParcelable(SUPER_STATE_KEY, super.onSaveInstanceState())
+    override fun onSaveInstanceState(): Parcelable {
+        val bundle = Bundle()
+        bundle.putParcelable(SUPER_STATE_KEY, super.onSaveInstanceState())
 
-         bundle.putInt(DRAG_ICON_KEY, dragIconRes)
-         bundle.putBoolean(CAN_DISMISS_KEY, canDismiss)
-         bundle.putFloat(DISMISS_THRESHOLD_KEY, dismissThreshold)
-         bundle.putBoolean(CAN_DRAG_KEY, canDrag)
-         bundle.putInt(ANIMATION_CONTENT_RES_KEY, contentRes)
-         bundle.putLong(ANIMATION_DURATION_KEY, animationDuration)
-         bundle.putInt(HIDE_DIRECTION_KEY, minimizeDirection.ordinal)
+        bundle.putBoolean(OPENED_KEY, opened)
+        bundle.putInt(CONTENT_RES_KEY, contentRes)
+        bundle.putBoolean(CAN_CLOSE_KEY, canClose)
+        bundle.putInt(CLOSE_ICON_RES_KEY, closeIconRes)
+        bundle.putBoolean(CAN_DRAG_KEY, canDrag)
+        bundle.putInt(DRAG_ICON_RES_KEY, dragIconRes)
+        bundle.putBoolean(CAN_DISMISS_KEY, canDismiss)
+        bundle.putFloat(DISMISS_THRESHOLD_KEY, dismissThreshold)
+        bundle.putInt(MINIMIZE_DIRECTION_KEY, minimizeDirection.ordinal)
+        bundle.putLong(ANIMATION_DURATION_KEY, animationDuration)
 
-         return bundle
-     }
+        return bundle
+    }
 
-     override fun onRestoreInstanceState(parcelable: Parcelable) {
-         LogUtils.d("protected void onRestoreInstanceState(Parcelable parcelable) {")
-         if (parcelable is Bundle) {
-             dragIconRes = parcelable.getInt(DRAG_ICON_KEY)
-             canDismiss = parcelable.getBoolean(CAN_DISMISS_KEY)
-             dismissThreshold = parcelable.getFloat(DISMISS_THRESHOLD_KEY)
-             canDrag = parcelable.getBoolean(CAN_DRAG_KEY)
-             contentRes = parcelable.getInt(ANIMATION_CONTENT_RES_KEY)
-             animationDuration = parcelable.getLong(ANIMATION_DURATION_KEY)
-             minimizeDirection = MinimizeDirection.values()[parcelable.getInt(HIDE_DIRECTION_KEY)]
+    override fun onRestoreInstanceState(parcelable: Parcelable) {
+        if (parcelable is Bundle) {
+            opened = parcelable.getBoolean(OPENED_KEY)
+            contentRes = parcelable.getInt(CONTENT_RES_KEY)
+            canClose = parcelable.getBoolean(CAN_CLOSE_KEY)
+            closeIconRes = parcelable.getInt(CLOSE_ICON_RES_KEY)
+            canDrag = parcelable.getBoolean(CAN_DRAG_KEY)
+            dragIconRes = parcelable.getInt(DRAG_ICON_RES_KEY)
+            canDismiss = parcelable.getBoolean(CAN_DISMISS_KEY)
+            dismissThreshold = parcelable.getFloat(DISMISS_THRESHOLD_KEY)
+            minimizeDirection = MinimizeDirection.values()[parcelable.getInt(MINIMIZE_DIRECTION_KEY)]
+            animationDuration = parcelable.getLong(ANIMATION_DURATION_KEY)
 
-             val state = parcelable.getParcelable<Parcelable>(SUPER_STATE_KEY)
-             super.onRestoreInstanceState(state)
-         } else {
-             super.onRestoreInstanceState(parcelable)
-         }
+            val state = parcelable.getParcelable<Parcelable>(SUPER_STATE_KEY)
+            super.onRestoreInstanceState(state)
+        } else {
+            super.onRestoreInstanceState(parcelable)
+        }
 
-         init(context)
-     }
+        if (opened) {
+            openWithoutAnimation()
+        }
+    }
 
-     companion object {
-         private val SUPER_STATE_KEY = "com.qwert2603.floating_action_mode.SUPER_STATE_KEY"
-         private val DRAG_ICON_KEY = "com.qwert2603.floating_action_mode.DRAG_ICON_KEY"
-         private val CAN_DISMISS_KEY = "com.qwert2603.floating_action_mode.CAN_DISMISS_KEY"
-         private val DISMISS_THRESHOLD_KEY = "com.qwert2603.floating_action_mode.DISMISS_THRESHOLD_KEY"
-         private val CAN_DRAG_KEY = "com.qwert2603.floating_action_mode.CAN_DRAG_KEY"
-         private val ANIMATION_CONTENT_RES_KEY = "com.qwert2603.floating_action_mode.ANIMATION_CONTENT_RES_KEY"
-         private val ANIMATION_DURATION_KEY = "com.qwert2603.floating_action_mode.ANIMATION_DURATION_KEY"
-         private val HIDE_DIRECTION_KEY = "com.qwert2603.floating_action_mode.HIDE_DIRECTION_KEY"
-     }*/
+    companion object {
+        private val SUPER_STATE_KEY = "com.qwert2603.floating_action_mode.SUPER_STATE_KEY"
+
+        private val OPENED_KEY = "com.qwert2603.floating_action_mode.OPENED_KEY"
+        private val CONTENT_RES_KEY = "com.qwert2603.floating_action_mode.CONTENT_RES_KEY"
+        private val CAN_CLOSE_KEY = "com.qwert2603.floating_action_mode.CAN_CLOSE_KEY"
+        private val CLOSE_ICON_RES_KEY = "com.qwert2603.floating_action_mode.CLOSE_ICON_RES_KEY"
+        private val CAN_DRAG_KEY = "com.qwert2603.floating_action_mode.CAN_DRAG_KEY"
+        private val DRAG_ICON_RES_KEY = "com.qwert2603.floating_action_mode.DRAG_ICON_RES_KEY"
+        private val CAN_DISMISS_KEY = "com.qwert2603.floating_action_mode.CAN_DISMISS_KEY"
+        private val DISMISS_THRESHOLD_KEY = "com.qwert2603.floating_action_mode.DISMISS_THRESHOLD_KEY"
+        private val MINIMIZE_DIRECTION_KEY = "com.qwert2603.floating_action_mode.MINIMIZE_DIRECTION_KEY"
+        private val ANIMATION_DURATION_KEY = "com.qwert2603.floating_action_mode.ANIMATION_DURATION_KEY"
+
+    }
 }

@@ -46,7 +46,18 @@ class MainActivity : AppCompatActivity() {
         internal inner class VH(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
             init {
-                itemView.setOnClickListener { Snackbar.make(this@MainActivity.activity_main, itemView.text.text, Snackbar.LENGTH_SHORT).show() }
+                itemView.setOnClickListener {
+                    Snackbar.make(this@MainActivity.activity_main, itemView.text.text, Snackbar.LENGTH_SHORT).show()
+                    if (adapterPosition == 14) {
+                        floating_action_mode.canDrag = !floating_action_mode.canDrag
+                    }
+                    if (adapterPosition == 17) {
+                        floating_action_mode.canClose = !floating_action_mode.canClose
+                    }
+                    if (adapterPosition == 26) {
+                        floating_action_mode.contentRes = if (floating_action_mode.contentRes == 0) R.layout.user_list_action_mode else 0
+                    }
+                }
                 itemView.setOnLongClickListener {
                     floating_action_mode.open()
                     return@setOnLongClickListener true
