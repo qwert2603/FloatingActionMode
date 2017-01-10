@@ -6,7 +6,7 @@ import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 
-object Utils {
+internal object Utils {
 
     private val sMainLooperHandler: Handler = Handler(Looper.getMainLooper())
 
