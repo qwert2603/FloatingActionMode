@@ -275,10 +275,10 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
      * Close FAM with animation.
      */
     open fun close() {
-        onCloseListener?.onClose()
         minimize(true)
+        opened = false
+        onCloseListener?.onClose()
         Utils.runOnUI(animationDuration * 2) {
-            opened = false
             visibility = View.INVISIBLE
         }
     }
@@ -358,9 +358,9 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         override fun onDependentViewChanged(parent: CoordinatorLayout, child: FloatingActionMode, dependency: View): Boolean {
             when (dependency) {
                 is AppBarLayout -> child.topOffset = dependency.bottom
-                is Snackbar.SnackbarLayout -> child.bottomOffset = dependency.height - dependency.translationY.toInt()
+                is Snackbar.SnackbarLayout -> child.bottomOffset = -1 * Math.min(0, dependency.getTranslationY().toInt() - dependency.getHeight())
             }
-            return false
+            return true
         }
 
         override fun onStartNestedScroll(coordinatorLayout: CoordinatorLayout?, child: FloatingActionMode?, directTargetChild: View?, target: View?, nestedScrollAxes: Int): Boolean {
@@ -369,6 +369,8 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
 
         override fun onNestedScroll(coordinatorLayout: CoordinatorLayout, child: FloatingActionMode, target: View, dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int) {
             super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed)
+
+            if (!child.opened) return
 
             // FAM should not react to scroll its children.
             var parent = target.parent
