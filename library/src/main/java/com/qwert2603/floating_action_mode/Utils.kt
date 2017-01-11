@@ -16,19 +16,6 @@ internal object Utils {
         sMainLooperHandler.postDelayed({ func() }, delay)
     }
 
-    /**
-     * Set enabled state to view and all its descendants.
-     */
-    fun View.setEnabledWithDescendants(enabled: Boolean) {
-        //todo: disable/enable scrolling in NestedScrollView.
-        isEnabled = enabled
-        if (this is ViewGroup) {
-            for (i in 0..childCount - 1) {
-                getChildAt(i).setEnabledWithDescendants(enabled)
-            }
-        }
-    }
-
     fun View.centerX() = top + height / 2
 
     fun View.parentHeight() = (parent as ViewGroup?)?.height ?: 0

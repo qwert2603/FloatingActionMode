@@ -17,7 +17,6 @@ import android.view.View
 import android.widget.LinearLayout
 import com.qwert2603.floating_action_mode.Utils.centerX
 import com.qwert2603.floating_action_mode.Utils.parentHeight
-import com.qwert2603.floating_action_mode.Utils.setEnabledWithDescendants
 import kotlinx.android.synthetic.main.floating_action_mode.view.*
 
 /**
@@ -151,7 +150,6 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
 
         LayoutInflater.from(context).inflate(R.layout.floating_action_mode, this, true)
         orientation = HORIZONTAL
-        setOnClickListener { /* nth */ }
 
         if (attrs != null) {
             val typedArray = context.obtainStyledAttributes(attrs, R.styleable.FloatingActionMode)
@@ -294,7 +292,6 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
             return
         }
         maximized = true
-        setEnabledWithDescendants(true)
         val function = {
             scaleY = 1f
             scaleX = 1f
@@ -318,7 +315,6 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
             return
         }
         maximized = false
-        setEnabledWithDescendants(false)
         val function = {
             scaleY = 0.5f
             scaleX = 0.5f
@@ -389,6 +385,14 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
                 child.maximize(true)
             }
         }
+    }
+
+    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
+        return !maximized
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        return true
     }
 
     override fun onSaveInstanceState(): Parcelable {
