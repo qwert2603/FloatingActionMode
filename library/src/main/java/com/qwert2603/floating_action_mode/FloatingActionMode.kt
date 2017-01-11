@@ -279,7 +279,9 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         opened = false
         onCloseListener?.onClose()
         Utils.runOnUI(animationDuration * 2) {
-            visibility = View.INVISIBLE
+            if (!opened) {
+                visibility = View.INVISIBLE
+            }
         }
     }
 
