@@ -37,7 +37,6 @@ FAM has following XML-attributes (they also may be changed programmatically):
 * ***dismiss_threshold*** is fraction that used to solve threshold translationX for dismissing. (0.4f by default)
 
 * ***minimize_direction*** defines minimize direction of FAM. This attribute may have following values (nearest by default):
- * *none* - FAM will not be translated while minimizing.
  * *top* - FAM will be translated to the top border of parent (excluding offsets) while minimizing.
  * *bottom* - FAM will be translated to the bottom border of parent (excluding offsets) while minimizing.
  * *nearest* - FAM will be translated to the nearest (top or bottom) border of parent (excluding offsets) while minimizing.
