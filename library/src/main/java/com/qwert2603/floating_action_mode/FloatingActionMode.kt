@@ -302,13 +302,13 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         }
         maximized = false
         val function = {
-            scaleY = 0.5f
-            scaleX = 0.5f
+            scaleY = MINIMIZED_SCALE_Y
+            scaleX = MINIMIZED_SCALE_X
             translationY = calculateMinimizeTranslationY()
-            alpha = 0.5f
+            alpha = MINIMIZED_ALPHA
         }
         if (animate) {
-            animate().scaleY(0.5f).scaleX(0.5f).translationY(calculateMinimizeTranslationY()).alpha(0.5f)
+            animate().scaleY(MINIMIZED_SCALE_Y).scaleX(MINIMIZED_SCALE_X).translationY(calculateMinimizeTranslationY()).alpha(MINIMIZED_ALPHA)
                     .duration = animationDuration
         } else {
             function()
@@ -340,20 +340,21 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         MinimizeDirection.BOTTOM -> calculateMinimizeTranslationYBottom()
         MinimizeDirection.NEAREST -> if (isInTopHalfOfParent()) calculateMinimizeTranslationYTop() else calculateMinimizeTranslationYBottom()
         MinimizeDirection.NONE -> {
-            if (maximizeTranslationY + height / 2 < calculateMinimizeTranslationYBottom()
-                    && maximizeTranslationY - height / 2 > calculateMinimizeTranslationYTop()) {
+            val d = height * MINIMIZED_SCALE_Y
+            if (maximizeTranslationY + d < calculateMinimizeTranslationYBottom()
+                    && maximizeTranslationY - d > calculateMinimizeTranslationYTop()) {
                 maximizeTranslationY
-            } else if (maximizeTranslationY + height / 2 > calculateMinimizeTranslationYBottom()) {
-                calculateMinimizeTranslationYBottom() - height / 2
+            } else if (maximizeTranslationY + d > calculateMinimizeTranslationYBottom()) {
+                calculateMinimizeTranslationYBottom() - d
             } else {
-                calculateMinimizeTranslationYTop() + height / 2
+                calculateMinimizeTranslationYTop() + d
             }
         }
     }
 
-    private fun calculateMinimizeTranslationYTop() = (-top + topOffset).toFloat() - height * 0.25f
+    private fun calculateMinimizeTranslationYTop() = (-top + topOffset).toFloat() - height * (1 - MINIMIZED_SCALE_Y) / 2
 
-    private fun calculateMinimizeTranslationYBottom() = parentHeight() - bottomOffset - bottom + height * 0.25f
+    private fun calculateMinimizeTranslationYBottom() = parentHeight() - bottomOffset - bottom + height * (1 - MINIMIZED_SCALE_Y) / 2
 
     private fun isInTopHalfOfParent() = (centerX() + translationY < parentHeight() / 2)
 
@@ -469,5 +470,8 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         private val MINIMIZE_DIRECTION_KEY = "com.qwert2603.floating_action_mode.MINIMIZE_DIRECTION_KEY"
         private val ANIMATION_DURATION_KEY = "com.qwert2603.floating_action_mode.ANIMATION_DURATION_KEY"
 
+        val MINIMIZED_SCALE_X = 0.5f
+        val MINIMIZED_SCALE_Y = 0.5f
+        val MINIMIZED_ALPHA = 0.5f
     }
 }
