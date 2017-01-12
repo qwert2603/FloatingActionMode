@@ -139,7 +139,6 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
     var onOpenListener: OnOpenListener? = null
 
     enum class MinimizeDirection {
-        NONE,
         TOP,
         BOTTOM,
         NEAREST
@@ -339,17 +338,6 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         MinimizeDirection.TOP -> calculateMinimizeTranslationYTop()
         MinimizeDirection.BOTTOM -> calculateMinimizeTranslationYBottom()
         MinimizeDirection.NEAREST -> if (isInTopHalfOfParent()) calculateMinimizeTranslationYTop() else calculateMinimizeTranslationYBottom()
-        MinimizeDirection.NONE -> {
-            val d = height * MINIMIZED_SCALE_Y
-            if (maximizeTranslationY + d < calculateMinimizeTranslationYBottom()
-                    && maximizeTranslationY - d > calculateMinimizeTranslationYTop()) {
-                maximizeTranslationY
-            } else if (maximizeTranslationY + d > calculateMinimizeTranslationYBottom()) {
-                calculateMinimizeTranslationYBottom() - d
-            } else {
-                calculateMinimizeTranslationYTop() + d
-            }
-        }
     }
 
     private fun calculateMinimizeTranslationYTop() = (-top + topOffset).toFloat() - height * (1 - MINIMIZED_SCALE_Y) / 2
@@ -471,7 +459,7 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         private val ANIMATION_DURATION_KEY = "com.qwert2603.floating_action_mode.ANIMATION_DURATION_KEY"
 
         val MINIMIZED_SCALE_X = 0.5f
-        val MINIMIZED_SCALE_Y = 0.5f
+        val MINIMIZED_SCALE_Y = 1f
         val MINIMIZED_ALPHA = 0.5f
     }
 }

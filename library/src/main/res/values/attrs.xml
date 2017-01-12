@@ -11,10 +11,9 @@
         <attr name="can_dismiss" format="boolean"/>
         <attr name="dismiss_threshold" format="float"/>
         <attr name="minimize_direction" format="enum">
-            <enum name="none" value="0"/>
-            <enum name="top" value="1"/>
-            <enum name="bottom" value="2"/>
-            <enum name="nearest" value="3"/>
+            <enum name="top" value="0"/>
+            <enum name="bottom" value="1"/>
+            <enum name="nearest" value="2"/>
         </attr>
         <attr name="animation_duration" format="integer"/>
     </declare-styleable>
