@@ -13,9 +13,10 @@ import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item.view.*
-import kotlinx.android.synthetic.main.user_list_action_mode.*
 
 class MainActivity : AppCompatActivity() {
+
+    var b: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,10 +28,13 @@ class MainActivity : AppCompatActivity() {
         recycler_view.adapter = ItemsAdapter()
         recycler_view.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
 
-        select_all.setOnClickListener { Snackbar.make(activity_main, "select_all", Snackbar.LENGTH_SHORT).show() }
         floating_action_mode.onCloseListener = object : com.qwert2603.floating_action_mode.FloatingActionMode.OnCloseListener {
             override fun onClose() {
-                Snackbar.make(activity_main, "closed", Snackbar.LENGTH_SHORT).show()
+                if (b) {
+                    Snackbar.make(activity_main, "closed", Snackbar.LENGTH_SHORT).show()
+                }
+                fab.animate().translationY(0f)
+                b = !b
             }
         }
     }
@@ -56,12 +60,13 @@ class MainActivity : AppCompatActivity() {
                     }
                     if (adapterPosition == 26) {
                         if (floating_action_mode.contentRes == 0) floating_action_mode.contentRes = R.layout.user_list_action_mode else
-                        if (floating_action_mode.contentRes == R.layout.user_list_action_mode) floating_action_mode.contentRes = R.layout.user_list_action_mode_2 else
-                        if (floating_action_mode.contentRes == R.layout.user_list_action_mode_2) floating_action_mode.contentRes = 0
+                            if (floating_action_mode.contentRes == R.layout.user_list_action_mode) floating_action_mode.contentRes = R.layout.user_list_action_mode_2 else
+                                if (floating_action_mode.contentRes == R.layout.user_list_action_mode_2) floating_action_mode.contentRes = 0
                     }
                 }
                 itemView.setOnLongClickListener {
                     floating_action_mode.open()
+                    fab.animate().translationY(activity_main.height - fab.top.toFloat())
                     return@setOnLongClickListener true
                 }
             }

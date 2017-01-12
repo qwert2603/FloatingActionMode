@@ -46,6 +46,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
@@ -56,17 +57,22 @@
         android:id="@+id/floating_action_mode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/action_mode_margin"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="@dimen/action_mode_margin"
+        android:layout_marginEnd="@dimen/action_mode_margin"
+        android:layout_marginLeft="@dimen/action_mode_margin"
+        android:layout_marginRight="@dimen/action_mode_margin"
+        android:layout_marginStart="@dimen/action_mode_margin"
         android:animateLayoutChanges="true"
         android:background="@drawable/action_mode_background"
         android:translationZ="8dp"
         app:animation_duration="@integer/action_mode_animation_duration"
         app:can_dismiss="true"
-        app:can_drag="true"
-        app:opened="false"
-        app:content_res="@layout/user_list_action_mode_2"
+        app:can_drag="false"
+        app:content_res="@layout/user_list_action_mode"
         app:dismiss_threshold="0.35"
         app:drag_icon="@drawable/ic_drag_white_24dp"
-        app:minimize_direction="nearest"/>
+        app:minimize_direction="bottom"
+        app:opened="false"/>
 
 </android.support.design.widget.CoordinatorLayout>
