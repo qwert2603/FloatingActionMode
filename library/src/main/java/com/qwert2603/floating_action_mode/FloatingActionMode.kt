@@ -36,7 +36,7 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
             if (value != field) {
                 field = value
                 if (isInEditMode) {
-                    offsetTopAndBottom(calculateArrangeTranslationY().toInt())
+                    offsetTopAndBottom(calculateMaximizedTranslationY().toInt())
                     return
                 }
                 arrangeY()
@@ -51,7 +51,7 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
             if (value != field) {
                 field = value
                 if (isInEditMode) {
-                    offsetTopAndBottom(calculateArrangeTranslationY().toInt())
+                    offsetTopAndBottom(calculateMaximizedTranslationY().toInt())
                     return
                 }
                 arrangeY()
@@ -236,30 +236,7 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
             animate().translationY(calculateMinimizeTranslationY()).duration = animationDuration
             return
         }
-        translationY = calculateArrangeTranslationY()
-    }
-
-    private fun calculateArrangeTranslationY(): Float {
-        if (!maximized) {
-            return calculateMinimizeTranslationY()
-        }
-        var tY = maximizeTranslationY
-        var topMargin = 0
-        var bottomMargin = 0
-        val lp = layoutParams
-        if (lp is MarginLayoutParams) {
-            topMargin = lp.topMargin
-            bottomMargin = lp.bottomMargin
-        }
-        val topOver = (topOffset + topMargin) - (top + tY)
-        if (topOver > 0) {
-            tY += topOver
-        }
-        val bottomOver = (bottom + tY) - (parentHeight() - bottomOffset - bottomMargin)
-        if (bottomOver > 0) {
-            tY -= bottomOver
-        }
-        return tY
+        translationY = calculateMaximizedTranslationY()
     }
 
     /**
@@ -304,11 +281,11 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         val function = {
             scaleY = 1f
             scaleX = 1f
-            translationY = calculateArrangeTranslationY()
+            translationY = calculateMaximizedTranslationY()
             alpha = 1f
         }
         if (animate) {
-            animate().scaleY(1f).scaleX(1f).translationY(calculateArrangeTranslationY()).alpha(1f)
+            animate().scaleY(1f).scaleX(1f).translationY(calculateMaximizedTranslationY()).alpha(1f)
                     .duration = animationDuration
         } else {
             function()
@@ -338,11 +315,40 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         }
     }
 
+    private fun calculateMaximizedTranslationY(): Float {
+        var tY = maximizeTranslationY
+        var topMargin = 0
+        var bottomMargin = 0
+        val lp = layoutParams
+        if (lp is MarginLayoutParams) {
+            topMargin = lp.topMargin
+            bottomMargin = lp.bottomMargin
+        }
+        val topOver = (topOffset + topMargin) - (top + tY)
+        if (topOver > 0) {
+            tY += topOver
+        }
+        val bottomOver = (bottom + tY) - (parentHeight() - bottomOffset - bottomMargin)
+        if (bottomOver > 0) {
+            tY -= bottomOver
+        }
+        return tY
+    }
+
     private fun calculateMinimizeTranslationY() = when (minimizeDirection) {
         MinimizeDirection.TOP -> calculateMinimizeTranslationYTop()
         MinimizeDirection.BOTTOM -> calculateMinimizeTranslationYBottom()
         MinimizeDirection.NEAREST -> if (isInTopHalfOfParent()) calculateMinimizeTranslationYTop() else calculateMinimizeTranslationYBottom()
-        MinimizeDirection.NONE -> translationY
+        MinimizeDirection.NONE -> {
+            if (maximizeTranslationY + height / 2 < calculateMinimizeTranslationYBottom()
+                    && maximizeTranslationY - height / 2 > calculateMinimizeTranslationYTop()) {
+                maximizeTranslationY
+            } else if (maximizeTranslationY + height / 2 > calculateMinimizeTranslationYBottom()) {
+                calculateMinimizeTranslationYBottom() - height / 2
+            } else {
+                calculateMinimizeTranslationYTop() + height / 2
+            }
+        }
     }
 
     private fun calculateMinimizeTranslationYTop() = (-top + topOffset).toFloat() - height * 0.25f

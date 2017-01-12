@@ -65,6 +65,12 @@ class MainActivity : AppCompatActivity() {
                     if (adapterPosition == 17) {
                         floating_action_mode.canClose = !floating_action_mode.canClose
                     }
+                    if (adapterPosition == 19) {
+                        val minimizeDirection = FloatingActionMode.MinimizeDirection
+                                .values()[(floating_action_mode.minimizeDirection.ordinal + 1) % FloatingActionMode.MinimizeDirection.values().size]
+                        floating_action_mode.minimizeDirection = minimizeDirection
+                        Snackbar.make(this@MainActivity.activity_main, minimizeDirection.name, Snackbar.LENGTH_SHORT).show()
+                    }
                     if (adapterPosition == 26) {
                         if (floating_action_mode.contentRes == 0) floating_action_mode.contentRes = R.layout.user_list_action_mode else
                             if (floating_action_mode.contentRes == R.layout.user_list_action_mode) floating_action_mode.contentRes = R.layout.user_list_action_mode_2 else
