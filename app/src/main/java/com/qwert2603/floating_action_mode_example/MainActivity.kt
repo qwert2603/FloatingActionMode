@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.qwert2603.floating_action_mode.FloatingActionMode
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item.view.*
 
@@ -28,12 +29,18 @@ class MainActivity : AppCompatActivity() {
         recycler_view.adapter = ItemsAdapter()
         recycler_view.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
 
-        floating_action_mode.onCloseListener = object : com.qwert2603.floating_action_mode.FloatingActionMode.OnCloseListener {
+        floating_action_mode.onOpenListener = object : FloatingActionMode.OnOpenListener {
+            override fun onOpen() {
+                fab.animate().translationY(activity_main.height - fab.top.toFloat())
+            }
+        }
+
+        floating_action_mode.onCloseListener = object : FloatingActionMode.OnCloseListener {
             override fun onClose() {
+                fab.animate().translationY(0f)
                 if (b) {
                     Snackbar.make(activity_main, "closed", Snackbar.LENGTH_SHORT).show()
                 }
-                fab.animate().translationY(0f)
                 b = !b
             }
         }
@@ -66,7 +73,6 @@ class MainActivity : AppCompatActivity() {
                 }
                 itemView.setOnLongClickListener {
                     floating_action_mode.open()
-                    fab.animate().translationY(activity_main.height - fab.top.toFloat())
                     return@setOnLongClickListener true
                 }
             }

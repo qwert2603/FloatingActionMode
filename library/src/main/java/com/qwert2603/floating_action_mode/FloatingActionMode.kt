@@ -132,6 +132,12 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
 
     var onCloseListener: OnCloseListener? = null
 
+    interface OnOpenListener {
+        fun onOpen()
+    }
+
+    var onOpenListener: OnOpenListener? = null
+
     enum class MinimizeDirection {
         NONE,
         TOP,
@@ -264,6 +270,7 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
             return
         }
         opened = true
+        onOpenListener?.onOpen()
         visibility = View.VISIBLE
         maximizeTranslationY = 0f
         translationY = 0f
