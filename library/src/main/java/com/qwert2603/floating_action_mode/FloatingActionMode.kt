@@ -78,17 +78,17 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
     open var canClose: Boolean = true
         set(value) {
             field = value
-            close_button.visibility = if (field) View.VISIBLE else View.GONE
+            fam_close_button.visibility = if (field) View.VISIBLE else View.GONE
         }
 
     @DrawableRes
-    open var closeIconRes: Int = R.drawable.ic_close_white_24dp
+    open var closeIconRes: Int = R.drawable.fam_ic_close_white_24dp
         set(value) {
             field = value
             if (field != 0) {
-                close_button.setImageResource(field)
+                fam_close_button.setImageResource(field)
             } else {
-                close_button.setImageDrawable(null)
+                fam_close_button.setImageDrawable(null)
             }
         }
 
@@ -105,17 +105,17 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
     open var canDrag: Boolean = true
         set(value) {
             field = value
-            drag_button.visibility = if (field) View.VISIBLE else View.GONE
+            fam_drag_button.visibility = if (field) View.VISIBLE else View.GONE
         }
 
     @DrawableRes
-    open var dragIconRes: Int = R.drawable.ic_drag_white_24dp
+    open var dragIconRes: Int = R.drawable.fam_ic_drag_white_24dp
         set(value) {
             field = value
             if (field != 0) {
-                drag_button.setImageResource(field)
+                fam_drag_button.setImageResource(field)
             } else {
-                drag_button.setImageDrawable(null)
+                fam_drag_button.setImageDrawable(null)
             }
         }
 
@@ -175,25 +175,25 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         if (attrs != null) {
             val typedArray = context.obtainStyledAttributes(attrs, R.styleable.FloatingActionMode)
             try {
-                opened = typedArray.getBoolean(R.styleable.FloatingActionMode_opened, false)
-                contentRes = typedArray.getResourceId(R.styleable.FloatingActionMode_content_res, 0)
-                canClose = typedArray.getBoolean(R.styleable.FloatingActionMode_can_close, true)
-                closeIconRes = typedArray.getResourceId(R.styleable.FloatingActionMode_close_icon, R.drawable.ic_close_white_24dp)
-                canDrag = typedArray.getBoolean(R.styleable.FloatingActionMode_can_drag, true)
-                dragIconRes = typedArray.getResourceId(R.styleable.FloatingActionMode_drag_icon, R.drawable.ic_drag_white_24dp)
-                canDismiss = typedArray.getBoolean(R.styleable.FloatingActionMode_can_dismiss, true)
-                dismissThreshold = typedArray.getFloat(R.styleable.FloatingActionMode_dismiss_threshold, 0.4f)
-                val md = typedArray.getInteger(R.styleable.FloatingActionMode_minimize_direction, -1)
+                opened = typedArray.getBoolean(R.styleable.FloatingActionMode_fam_opened, false)
+                contentRes = typedArray.getResourceId(R.styleable.FloatingActionMode_fam_content_res, 0)
+                canClose = typedArray.getBoolean(R.styleable.FloatingActionMode_fam_can_close, true)
+                closeIconRes = typedArray.getResourceId(R.styleable.FloatingActionMode_fam_close_icon, R.drawable.fam_ic_close_white_24dp)
+                canDrag = typedArray.getBoolean(R.styleable.FloatingActionMode_fam_can_drag, true)
+                dragIconRes = typedArray.getResourceId(R.styleable.FloatingActionMode_fam_drag_icon, R.drawable.fam_ic_drag_white_24dp)
+                canDismiss = typedArray.getBoolean(R.styleable.FloatingActionMode_fam_can_dismiss, true)
+                dismissThreshold = typedArray.getFloat(R.styleable.FloatingActionMode_fam_dismiss_threshold, 0.4f)
+                val md = typedArray.getInteger(R.styleable.FloatingActionMode_fam_minimize_direction, -1)
                 if (md >= 0) minimizeDirection = MinimizeDirection.values()[md]
-                animationDuration = typedArray.getInteger(R.styleable.FloatingActionMode_animation_duration, 400).toLong()
+                animationDuration = typedArray.getInteger(R.styleable.FloatingActionMode_fam_animation_duration, 400).toLong()
             } finally {
                 typedArray.recycle()
             }
         }
 
-        close_button.setOnClickListener { close() }
+        fam_close_button.setOnClickListener { close() }
 
-        drag_button.setOnTouchListener(object : OnTouchListener {
+        fam_drag_button.setOnTouchListener(object : OnTouchListener {
             var prevTransitionY = 0f
             var startRawX = 0f
             var startRawY = 0f
@@ -207,7 +207,7 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
 
                 when (event.actionMasked) {
                     MotionEvent.ACTION_DOWN -> {
-                        this@FloatingActionMode.drag_button.isPressed = true
+                        this@FloatingActionMode.fam_drag_button.isPressed = true
                         startRawX = event.rawX
                         startRawY = event.rawY
                         prevTransitionY = this@FloatingActionMode.translationY
@@ -221,7 +221,7 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
                         }
                     }
                     MotionEvent.ACTION_UP -> {
-                        drag_button.isPressed = false
+                        fam_drag_button.isPressed = false
                         this@FloatingActionMode.animate().translationX(0f).duration = animationDuration
                         if (canDismiss && fractionX > dismissThreshold) {
                             this@FloatingActionMode.close()

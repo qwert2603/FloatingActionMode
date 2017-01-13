@@ -61,13 +61,13 @@
         android:animateLayoutChanges="true"
         android:background="@drawable/action_mode_background"
         android:translationZ="8dp"
-        app:animation_duration="@integer/action_mode_animation_duration"
-        app:can_dismiss="true"
-        app:can_drag="true"
-        app:content_res="@layout/user_list_action_mode"
-        app:dismiss_threshold="0.35"
-        app:drag_icon="@drawable/ic_drag_white_24dp"
-        app:minimize_direction="nearest"
-        app:opened="false"/>
+        app:fam_animation_duration="@integer/action_mode_animation_duration"
+        app:fam_can_dismiss="true"
+        app:fam_can_drag="true"
+        app:fam_content_res="@layout/user_list_action_mode"
+        app:fam_dismiss_threshold="0.35"
+        app:fam_drag_icon="@drawable/fam_ic_drag_white_24dp"
+        app:fam_minimize_direction="nearest"
+        app:fam_opened="false"/>
 
 </android.support.design.widget.CoordinatorLayout>

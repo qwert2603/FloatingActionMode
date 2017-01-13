@@ -2,20 +2,20 @@
 <resources>
 
     <declare-styleable name="FloatingActionMode">
-        <attr name="opened" format="boolean"/>
-        <attr name="content_res" format="reference"/>
-        <attr name="can_close" format="boolean"/>
-        <attr name="close_icon" format="reference"/>
-        <attr name="can_drag" format="boolean"/>
-        <attr name="drag_icon" format="reference"/>
-        <attr name="can_dismiss" format="boolean"/>
-        <attr name="dismiss_threshold" format="float"/>
-        <attr name="minimize_direction" format="enum">
+        <attr name="fam_opened" format="boolean"/>
+        <attr name="fam_content_res" format="reference"/>
+        <attr name="fam_can_close" format="boolean"/>
+        <attr name="fam_close_icon" format="reference"/>
+        <attr name="fam_can_drag" format="boolean"/>
+        <attr name="fam_drag_icon" format="reference"/>
+        <attr name="fam_can_dismiss" format="boolean"/>
+        <attr name="fam_dismiss_threshold" format="float"/>
+        <attr name="fam_minimize_direction" format="enum">
             <enum name="top" value="0"/>
             <enum name="bottom" value="1"/>
             <enum name="nearest" value="2"/>
         </attr>
-        <attr name="animation_duration" format="integer"/>
+        <attr name="fam_animation_duration" format="integer"/>
     </declare-styleable>
 
 </resources>
