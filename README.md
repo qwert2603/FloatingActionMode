@@ -6,7 +6,7 @@ Floating Action Mode (FAM) is the custom view for context actions on Android. (*
 
 FAM can be dragged over screen or it can be fixed at the top or bottom (with disabled dragging).
 
-## [Demo Video (Fixed)](https://www.youtube.com/watch?v=-Ii9A0o37V8)
+## [Demo Video (Fixed)](https://www.youtube.com/watch?v=1tn0MQV0ZrQ)
 ## [Demo Video (Dragging)](https://www.youtube.com/watch?v=PbQ8N7pWGt4)
 
 ## Fixed
