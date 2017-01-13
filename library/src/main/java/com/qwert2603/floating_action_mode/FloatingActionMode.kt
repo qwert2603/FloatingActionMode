@@ -1,5 +1,6 @@
 package com.qwert2603.floating_action_mode
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
@@ -15,6 +16,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.widget.LinearLayout
+import com.qwert2603.floating_action_mode.Utils.between
 import com.qwert2603.floating_action_mode.Utils.centerX
 import com.qwert2603.floating_action_mode.Utils.parentHeight
 import kotlinx.android.synthetic.main.floating_action_mode.view.*
@@ -148,6 +150,20 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
 
     var animationDuration: Long = 400L
 
+    private var translationYAnimator: ValueAnimator = ValueAnimator.ofFloat(0f)
+
+    private var startAnimationY: Float = 0f
+
+    private val translationYAnimatorUpdateListener = ValueAnimator.AnimatorUpdateListener {
+        val animatedValue = translationYAnimator.animatedValue as Float
+        if (animatedValue.between(calculateMinimizeTranslationYTop(), calculateMinimizeTranslationYBottom())) {
+            translationY = animatedValue
+        } else {
+            translationYAnimator.cancel()
+            arrangeY()
+        }
+    }
+
     init {
         if (!isInEditMode) {
             visibility = View.INVISIBLE
@@ -183,7 +199,7 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
             var startRawY = 0f
 
             override fun onTouch(v: View, event: MotionEvent): Boolean {
-                if (!this@FloatingActionMode.canDrag) {
+                if (!this@FloatingActionMode.canDrag || this@FloatingActionMode.translationYAnimator.isStarted) {
                     return false
                 }
 
@@ -230,12 +246,11 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
      * Arrange FAM to correct Y position considering [topOffset], [bottomOffset], [maximized] and [maximizeTranslationY]
      */
     private fun arrangeY() {
-        if (!maximized) {
-            // todo: react only if FAM crosses topOffset or bottomOffset.
-            animate().translationY(calculateMinimizeTranslationY()).duration = animationDuration
-            return
+        if (!translationYAnimator.isStarted) {
+            translationY = calculateTranslationY()
+        } else {
+            translationYAnimator.values[0].setFloatValues(startAnimationY, calculateTranslationY())
         }
-        translationY = calculateMaximizedTranslationY()
     }
 
     /**
@@ -261,7 +276,7 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         minimize(true)
         opened = false
         onCloseListener?.onClose()
-        Utils.runOnUI(animationDuration * 2) {
+        Utils.runOnUI((animationDuration * 1.5).toLong()) {
             if (!opened) {
                 visibility = View.INVISIBLE
             }
@@ -284,8 +299,8 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
             alpha = 1f
         }
         if (animate) {
-            animate().scaleY(1f).scaleX(1f).translationY(calculateMaximizedTranslationY()).alpha(1f)
-                    .duration = animationDuration
+            animate().scaleY(1f).scaleX(1f).alpha(1f).duration = animationDuration
+            animateTranslationY(calculateMaximizedTranslationY())
         } else {
             function()
         }
@@ -307,12 +322,30 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
             alpha = MINIMIZED_ALPHA
         }
         if (animate) {
-            animate().scaleY(MINIMIZED_SCALE_Y).scaleX(MINIMIZED_SCALE_X).translationY(calculateMinimizeTranslationY()).alpha(MINIMIZED_ALPHA)
-                    .duration = animationDuration
+            animate().scaleY(MINIMIZED_SCALE_Y).scaleX(MINIMIZED_SCALE_X).alpha(MINIMIZED_ALPHA).duration = animationDuration
+            animateTranslationY(calculateMinimizeTranslationY())
         } else {
             function()
         }
     }
+
+    private fun animateTranslationY(to: Float) {
+        translationYAnimator.apply {
+            removeAllListeners()
+            removeAllUpdateListeners()
+            cancel()
+        }
+        startAnimationY = translationY
+        translationYAnimator = ValueAnimator.ofFloat(translationY, to)
+        translationYAnimator.apply {
+            duration = animationDuration
+            addUpdateListener(translationYAnimatorUpdateListener)
+            startDelay = animationDuration / 3
+            start()
+        }
+    }
+
+    private fun calculateTranslationY() = if (maximized) calculateMaximizedTranslationY() else calculateMinimizeTranslationY()
 
     private fun calculateMaximizedTranslationY(): Float {
         var tY = maximizeTranslationY
@@ -459,7 +492,7 @@ open class FloatingActionMode @JvmOverloads constructor(context: Context, attrs:
         private val ANIMATION_DURATION_KEY = "com.qwert2603.floating_action_mode.ANIMATION_DURATION_KEY"
 
         val MINIMIZED_SCALE_X = 0.5f
-        val MINIMIZED_SCALE_Y = 1f
+        val MINIMIZED_SCALE_Y = 0.5f
         val MINIMIZED_ALPHA = 0.5f
     }
 }

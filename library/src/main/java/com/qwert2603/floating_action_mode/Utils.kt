@@ -20,4 +20,5 @@ internal object Utils {
 
     fun View.parentHeight() = (parent as ViewGroup?)?.height ?: 0
 
+    fun <T : Comparable<T>> T.between(l: T, r: T) = l < this && this < r
 }
