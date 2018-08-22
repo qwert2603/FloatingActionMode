@@ -23,7 +23,6 @@ FAM has following XML-attributes (they also may be changed programmatically):
 * ***fam_opened*** defines whether FAM opened when created. (false by default)
 
 * ***fam_content_res*** is LayoutRes that represents content of FAM (e.g. some buttons). (no content by default)
-
 * ***fam_can_close*** defines whether FAM has button for closing itself. (true by default)
 
 * ***fam_close_icon*** is DrawableRes for closing button. (has default value)
@@ -87,7 +86,7 @@ FAM animates *fam_close_button* and *fam_drag_button* changes by default.
 </android.support.design.widget.CoordinatorLayout>
 ```
 
-##Download
+## Download
 
 ```
 allprojects {
